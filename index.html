@@ -325,6 +325,42 @@ input[type=range]{width:100%;accent-color:var(--blue)}
   .panel{border-radius:20px;padding:16px 14px;}
   .logo-img{width:46px;height:46px;}
 }
+/* 視覺美化層：柔和遊戲卡片、明確焦點與更有層次的互動回饋 */
+body{position:relative;overflow-x:hidden;background:radial-gradient(circle at 8% 4%,#d8f7ff 0 14%,transparent 34%),radial-gradient(circle at 94% 12%,#ffe1ed 0 11%,transparent 30%),linear-gradient(145deg,#fffaf2 0%,#eef7ff 52%,#f4efff 100%)}
+body:before,body:after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(2px);pointer-events:none;opacity:.55}
+body:before{width:210px;height:210px;left:-90px;bottom:8%;background:#bdeeff}
+body:after{width:180px;height:180px;right:-70px;bottom:18%;background:#ffd6e7}
+.shell{position:relative}
+.topbar{padding:8px 4px 4px}
+.badge{box-shadow:0 5px 14px rgba(37,99,235,.12);white-space:nowrap}
+.panel{position:relative;overflow:hidden;border-color:rgba(255,255,255,.82);box-shadow:0 22px 55px rgba(37,66,120,.15),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel:before{content:"";position:absolute;left:-35px;top:-55px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none}
+.section-title{position:relative;color:#132b52;letter-spacing:-.2px}
+.section-title:after{content:"";display:block;width:42px;height:4px;margin-top:7px;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#a78bfa)}
+.hint{position:relative}
+.video-box{border:4px solid rgba(255,255,255,.8);box-shadow:0 10px 24px rgba(15,23,42,.18),inset 0 0 0 1px rgba(103,232,249,.45)}
+.video-box:before{content:"LIVE · 臉部定位";position:absolute;z-index:2;right:10px;top:10px;color:#dffbff;background:rgba(8,47,73,.72);border:1px solid rgba(165,243,252,.7);padding:4px 8px;border-radius:99px;font-size:.68rem;font-weight:800;letter-spacing:.3px}
+.primary,.secondary,.quiet{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.primary:hover,.secondary:hover,.quiet:hover{transform:translateY(-2px);filter:saturate(1.08)}
+.primary{box-shadow:0 10px 20px rgba(37,99,235,.25),inset 0 1px 0 rgba(255,255,255,.35)}
+.secondary{box-shadow:0 6px 14px rgba(37,99,235,.08)}
+.circle-preview{background:radial-gradient(circle,#fff 0 68%,#f2f8ff 69% 100%);border:8px solid rgba(219,234,254,.95);box-shadow:0 12px 28px rgba(37,99,235,.13),inset 0 0 0 2px #fff}
+.circle-preview:before{content:"慢慢移動";position:absolute;top:10%;color:#64748b;font-size:.72rem;font-weight:800;letter-spacing:1px}
+.preview-dot{border-color:#fff;box-shadow:0 0 0 5px rgba(250,204,21,.25),0 5px 14px rgba(15,23,42,.3);animation:softPulse 1.8s ease-in-out infinite}
+.game-panel{background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(239,248,255,.93))}
+.game-title{color:#15335d;font-size:clamp(1.2rem,3vw,1.55rem)}
+.hud span{border:1px solid #dbeafe;box-shadow:0 4px 12px rgba(37,99,235,.08);color:#1e3a8a}
+.plate-wrap{filter:drop-shadow(0 14px 18px rgba(30,64,175,.12))}
+.progress{height:12px;border:2px solid #fff;box-shadow:0 3px 10px rgba(37,99,235,.12)}
+.progress i{background:linear-gradient(90deg,#fb7185,#f59e0b,#facc15);box-shadow:0 0 10px rgba(245,158,11,.5)}
+.dpad{padding:6px;border-radius:22px;background:rgba(239,246,255,.78);border:1px solid #bfdbfe;box-shadow:0 8px 20px rgba(37,99,235,.1)}
+.dpad button{background:linear-gradient(145deg,#eff6ff,#bfdbfe);border:1px solid #bfdbfe;box-shadow:inset 0 -3px 0 #93c5fd,0 3px 7px rgba(37,99,235,.12)}
+.dpad button:hover{background:linear-gradient(145deg,#dbeafe,#93c5fd)}
+.dpad .center{background:#fff;color:#64748b}
+.stars{filter:drop-shadow(0 3px 4px rgba(245,158,11,.25));animation:starFloat 1.8s ease-in-out infinite}
+@keyframes softPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes starFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:700px){.topbar{align-items:flex-start}.panel:before{width:100px;height:100px}.video-box:before{font-size:.6rem}.direction-help{box-shadow:0 5px 14px rgba(37,99,235,.08)}}
 </style>
 </head>
 <body>
@@ -746,6 +782,12 @@ class PlateGame {
 
   loadLevel() {
     const counts = [5, 10, 20];
+    const palettes = [
+      ['#d92f3f', '#ff756f'],
+      ['#4b2a20', '#9a6246'],
+      ['#f0a51a', '#ffe082']
+    ];
+    const palette = palettes[this.level] || palettes[0];
     const n = counts[this.level];
     const scale = this.W / 225;
     this.spots = sauceAreas.slice(0, n).map((a, i) => ({
@@ -755,7 +797,8 @@ class PlateGame {
       alive: true,
       seed: i * 0.91,
       rot: i * 0.37,
-      color: i % 2 ? '#b91c1c' : '#3f2b22'
+      color: i % 2 ? palette[0] : palette[1],
+      highlight: palette[1]
     }));
     this.cursor = { x: this.W / 2, y: this.H / 2 };
     this.levelStart = performance.now();
@@ -832,11 +875,75 @@ class PlateGame {
     }
   }
 
+  // 盤子外圍的故事插畫：只使用 Canvas 幾何圖形，保持單檔案、離線可開啟。
+  // 盤面半徑約為 0.455W，裝飾固定畫在四角與上下邊緣，避免遮住醬汁和黃框游標。
+  drawSceneDecorations(x) {
+    const W = this.W, H = this.H, cx = W / 2, cy = H / 2;
+    const level = this.level;
+    const round = (px, py, w, h, r, fill, stroke = null, sw = 1) => {
+      x.beginPath(); x.roundRect(px, py, w, h, r); x.fillStyle = fill; x.fill();
+      if (stroke) { x.lineWidth = sw; x.strokeStyle = stroke; x.stroke(); }
+    };
+    const badge = (label, fill, px, py, width) => {
+      round(px, py, width, 28, 14, fill);
+      x.fillStyle = '#fff'; x.font = '900 13px ui-rounded, sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(label, px + width / 2, py + 14);
+    };
+    const star = (px, py, r, fill) => {
+      x.save(); x.translate(px, py); x.rotate(-0.15); x.beginPath();
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5; const rr = i % 2 ? r * .42 : r; const qx = Math.cos(a) * rr, qy = Math.sin(a) * rr; i ? x.lineTo(qx, qy) : x.moveTo(qx, qy); }
+      x.closePath(); x.fillStyle = fill; x.fill(); x.restore();
+    };
+    const tomato = (px, py, r) => {
+      x.fillStyle = '#f05a55'; x.beginPath(); x.arc(px, py, r, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#c73643'; x.beginPath(); x.arc(px - r * .25, py - r * .22, r * .18, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#4d9b58'; x.beginPath(); x.moveTo(px, py - r * .65); x.lineTo(px - r * .45, py - r * .98); x.lineTo(px - r * .12, py - r * .35); x.lineTo(px + r * .34, py - r * .98); x.lineTo(px + r * .18, py - r * .22); x.closePath(); x.fill();
+    };
+    const fries = (px, py, scale = 1) => {
+      x.save(); x.translate(px, py); x.rotate(-.08);
+      for (let i = -2; i <= 2; i++) { round(i * 12 * scale, -40 * scale - Math.abs(i % 2) * 8 * scale, 10 * scale, 54 * scale, 4 * scale, '#ffd85a', '#e5a82e', 2); }
+      x.beginPath(); x.moveTo(-38 * scale, -10 * scale); x.lineTo(38 * scale, -10 * scale); x.lineTo(30 * scale, 48 * scale); x.quadraticCurveTo(0, 62 * scale, -30 * scale, 48 * scale); x.closePath(); x.fillStyle = '#ef6470'; x.fill(); x.strokeStyle = '#c83d58'; x.lineWidth = 3; x.stroke();
+      x.fillStyle = '#fff4d8'; x.font = `900 ${16 * scale}px sans-serif`; x.textAlign = 'center'; x.fillText('FRIES', 0, 28 * scale); x.restore();
+    };
+    const toast = (px, py, scale = 1) => {
+      x.save(); x.translate(px, py); x.rotate(.12);
+      x.beginPath(); x.moveTo(-42 * scale, 44 * scale); x.lineTo(-48 * scale, -24 * scale); x.quadraticCurveTo(-45 * scale, -58 * scale, 0, -58 * scale); x.quadraticCurveTo(45 * scale, -58 * scale, 48 * scale, -24 * scale); x.lineTo(42 * scale, 44 * scale); x.closePath(); x.fillStyle = '#e6a85d'; x.fill(); x.strokeStyle = '#bd7542'; x.lineWidth = 4; x.stroke();
+      x.beginPath(); x.moveTo(-31 * scale, 30 * scale); x.lineTo(-36 * scale, -22 * scale); x.quadraticCurveTo(-32 * scale, -43 * scale, 0, -43 * scale); x.quadraticCurveTo(32 * scale, -43 * scale, 36 * scale, -22 * scale); x.lineTo(31 * scale, 30 * scale); x.closePath(); x.fillStyle = '#583225'; x.fill();
+      x.fillStyle = '#ffd6a0'; x.beginPath(); x.arc(-14 * scale, -11 * scale, 5 * scale, 0, Math.PI * 2); x.arc(14 * scale, 7 * scale, 4 * scale, 0, Math.PI * 2); x.fill(); x.restore();
+    };
+    const pizza = (px, py, scale = 1, rot = 0) => {
+      x.save(); x.translate(px, py); x.rotate(rot); x.beginPath(); x.moveTo(0, -52 * scale); x.lineTo(48 * scale, 38 * scale); x.quadraticCurveTo(0, 22 * scale, -48 * scale, 38 * scale); x.closePath(); x.fillStyle = '#ffd36b'; x.fill(); x.strokeStyle = '#d18b3b'; x.lineWidth = 3; x.stroke();
+      x.beginPath(); x.moveTo(-39 * scale, 30 * scale); x.quadraticCurveTo(0, 12 * scale, 39 * scale, 30 * scale); x.lineTo(34 * scale, 42 * scale); x.quadraticCurveTo(0, 25 * scale, -34 * scale, 42 * scale); x.closePath(); x.fillStyle = '#e8a64e'; x.fill();
+      [[-14,-6],[15,4],[2,18]].forEach(([a,b]) => { x.fillStyle = '#df5550'; x.beginPath(); x.arc(a * scale, b * scale, 6 * scale, 0, Math.PI * 2); x.fill(); }); x.restore();
+    };
+    const child = (px, py) => {
+      x.fillStyle = '#ffd7b5'; x.beginPath(); x.arc(px, py, 24, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#6a4b43'; x.beginPath(); x.arc(px, py - 10, 25, Math.PI, Math.PI * 2); x.fill();
+      x.fillStyle = '#17233d'; x.beginPath(); x.arc(px - 8, py + 2, 3, 0, Math.PI * 2); x.arc(px + 8, py + 2, 3, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = '#d85d68'; x.lineWidth = 3; x.beginPath(); x.arc(px, py + 8, 8, 0, Math.PI); x.stroke();
+    };
+    x.save();
+    x.globalAlpha = .98;
+    if (level === 0) {
+      badge('薯條吃完了！', '#ef6470', 24, H - 55, 132); fries(82, H - 76, .72); tomato(W - 70, 62, 19); tomato(W - 110, 82, 13); star(W - 60, H - 62, 15, '#ffd75a');
+      x.fillStyle = '#a85d4a'; x.font = '900 16px ui-rounded, sans-serif'; x.textAlign = 'center'; x.fillText('番茄醬', W - 89, 118);
+    } else if (level === 1) {
+      badge('吐司沾滿巧克力！', '#8b5a46', 20, H - 55, 162); toast(82, H - 77, .7); child(W - 78, 70); star(W - 120, 48, 14, '#f0b35b');
+      x.fillStyle = '#8b5a46'; x.beginPath(); x.arc(W - 35, H - 53, 11, 0, Math.PI * 2); x.arc(W - 67, H - 39, 7, 0, Math.PI * 2); x.fill();
+    } else {
+      badge('披薩起司到處都是！', '#e8a12e', 12, H - 55, 188); pizza(72, H - 78, .66, -.2); pizza(W - 72, 72, .55, .25); pizza(W - 116, H - 58, .38, -.3); star(W - 42, 128, 14, '#ffdc63');
+    }
+    // 小泡泡與故事點綴，讓畫面保持柔和的童趣感。
+    x.fillStyle = '#fff'; x.globalAlpha = .72; [[28,58,7],[W-33,180,6],[W-52,H-120,8],[150,35,5]].forEach(([px,py,r]) => { x.beginPath(); x.arc(px,py,r,0,Math.PI*2); x.fill(); });
+    x.restore();
+  }
+
   render() {
     const x = this.x;
     x.clearRect(0, 0, this.W, this.H);
     x.fillStyle = '#f8fafc';
     x.fillRect(0, 0, this.W, this.H);
+    this.drawSceneDecorations(x);
 
     // 陶瓷圓盤
     x.save();
@@ -878,7 +985,7 @@ class PlateGame {
         x.fillStyle = s.color || '#3f2b22';
         x.fill();
         x.globalAlpha = 0.5;
-        x.fillStyle = s.color === '#b91c1c' ? '#ff9187' : '#76513b';
+        x.fillStyle = s.highlight || '#76513b';
         x.beginPath();
         x.ellipse(-s.r * 0.2, -s.r * 0.25, s.r * 0.34, s.r * 0.18, -0.2, 0, Math.PI * 2);
         x.fill();
@@ -931,9 +1038,9 @@ class PlateGame {
     }
 
     const names = [
-      '第一關：5 個大小黑紅醬汁污點',
-      '第二關：10 個大小黑紅醬汁污點',
-      '第三關：20 個大小黑紅醬汁污點'
+      '第一關：番茄醬薯條時間',
+      '第二關：巧克力吐司大作戰',
+      '第三關：披薩起司醬清潔任務'
     ];
     $('levelTitle').textContent = names[this.level];
     $('levelHud').textContent = `第 ${this.level + 1} / 3 關`;
@@ -1011,7 +1118,7 @@ $('startBtn').onclick = () => {
   if ($('cameraVideo').srcObject) {
     $('pipVideo').srcObject = $('cameraVideo').srcObject;
   }
-  show('game', '活動中 · 清番茄醬');
+      show('game', '活動中 · 清理食物醬汁');
   game.start();
 };
 
